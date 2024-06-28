@@ -1,0 +1,82 @@
+<!-- procesamiento_nlp.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>DataFrame de Iris</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        // Función para aplicar el color escalado a las celdas de cada columna
+        function applyColorScale() {
+            var columns = document.querySelectorAll('table tbody tr:first-child td');
+            
+            // Iterar sobre cada columna
+            columns.forEach(function(column, columnIndex) {
+                var values = [];
+                // Obtener todos los valores de la columna
+                document.querySelectorAll('table tbody tr td:nth-child(' + (columnIndex + 1) + ')').forEach(function(cell) {
+                    values.push(parseFloat(cell.textContent));
+                });
+
+                // Encontrar el mínimo y máximo valor en la columna
+                var minValue = Math.min(...values);
+                var maxValue = Math.max(...values);
+
+                // Aplicar el color escalado a cada celda de la columna
+                values.forEach(function(value, rowIndex) {
+                    var cell = document.querySelector('table tbody tr:nth-child(' + (rowIndex + 1) + ') td:nth-child(' + (columnIndex + 1) + ')');
+                    var ratio = (value - minValue) / (maxValue - minValue);
+                    var color = 'rgb(' + Math.round(255 - ratio * 255) + ', ' + Math.round(ratio * 255) + ', 0)';
+                    cell.style.backgroundColor = color;
+                });
+            });
+        }
+
+        // Ejecutar la función al cargar la página
+        window.onload = function() {
+            applyColorScale();
+        };
+    </script>
+</head>
+<body>
+    <h1>DataFrame de Iris</h1>
+
+    <table>
+        <thead>
+            <tr>
+                {% for column in df.columns %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in df.iterrows %}
+                <tr>
+                    {% for value in row %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Mostrar el gráfico -->
+    <div>
+        <img src="data:image/png;base64,{{ graphic }}" alt="Gráfico de dispersión Iris">
+    </div>
+
+</body>
+</html>
